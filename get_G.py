@@ -4,7 +4,7 @@ import numpy as np
 import argparse
 import re
 
-Area = 2.5e-5  # Å²
+Area = 1e-4  # Å²
 
 h = 6.5821251e-16
 directions = ['x', 'y', 'z']
@@ -124,16 +124,24 @@ def main():
 
     if i > j:
         i, j = j, i
+    
+    Oi_dir = f"matrix_0-{i}"
+    Oi_key = f"0-{i}x"
+    M01_sample = get_overlap_matrix(Oi_dir, Oi_key)
+    if M01_sample is not None:
+        Nk = M01_sample.shape[0]
+        Nb = M01_sample.shape[1]
+        print(f"Detected Nk = {Nk}, Nb = {Nb}")
 
     G_ij = compute_G_matrix(i, j)
-    print(f"[Info] Computed G matrix for atom pair ({i}, {j})")
+    print(f"Computed G matrix for atom pair ({i}, {j})")
     print("G_{iα, jβ} matrix [eV*s/Å²]:")
     for row in G_ij:
         print("  ".join(f"{val: .6e}" for val in row))
 
     if i != j:
         G_ji = -G_ij.T
-        print(f"\n[Info] Inferred G matrix for atom pair ({j}, {i}) using antisymmetry")
+        print(f"\nInferred G matrix for atom pair ({j}, {i}) using antisymmetry")
         print("G_{jβ, iα} matrix [eV*s/Å²]:")
         for row in G_ji:
             print("  ".join(f"{val: .6e}" for val in row))
